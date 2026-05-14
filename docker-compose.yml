@@ -1,0 +1,75 @@
+name: pzero
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pzero}
+      POSTGRES_USER: ${POSTGRES_USER:-pzero}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-pzero}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-pzero} -d ${POSTGRES_DB:-pzero}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  mariadb:
+    image: mariadb:11.4
+    command:
+      - --local-infile=1
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MARIADB_DATABASE: ${MARIADB_DATABASE:-pzero}
+      MARIADB_USER: ${MARIADB_USER:-pzero}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD:-pzero}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD:-pzero_root}
+    ports:
+      - "${MARIADB_PORT:-3306}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -u${MARIADB_USER:-pzero} -p${MARIADB_PASSWORD:-pzero} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  loader-postgres:
+    build: .
+    environment:
+      PZERO_ENGINE: postgres
+      PZERO_SOURCE: ${PZERO_SOURCE:-/data/raw}
+      PZERO_DB_HOST: postgres
+      PZERO_DB_PORT: 5432
+      PZERO_DB_NAME: ${POSTGRES_DB:-pzero}
+      PZERO_DB_USER: ${POSTGRES_USER:-pzero}
+      PZERO_DB_PASSWORD: ${POSTGRES_PASSWORD:-pzero}
+    volumes:
+      - ./data:/data:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  loader-mariadb:
+    build: .
+    environment:
+      PZERO_ENGINE: mariadb
+      PZERO_SOURCE: ${PZERO_SOURCE:-/data/raw}
+      PZERO_DB_HOST: mariadb
+      PZERO_DB_PORT: 3306
+      PZERO_DB_NAME: ${MARIADB_DATABASE:-pzero}
+      PZERO_DB_USER: ${MARIADB_USER:-pzero}
+      PZERO_DB_PASSWORD: ${MARIADB_PASSWORD:-pzero}
+    volumes:
+      - ./data:/data:ro
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  mariadb_data:
