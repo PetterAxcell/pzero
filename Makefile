@@ -1,4 +1,7 @@
-.PHONY: up-postgres load-postgres psql check-postgres up-mariadb load-mariadb mariadb check-mariadb down clean-volumes
+.PHONY: test up-postgres load-postgres psql check-postgres up-mariadb load-mariadb mariadb check-mariadb down clean-volumes
+
+test:
+	python3 -m unittest discover -s tests
 
 up-postgres:
 	docker compose up -d postgres

@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this database build repository, please cite the software and the Project Zero dataset paper."
+type: software
+title: "pzero: Database build for the Project Zero ward deterioration dataset"
+authors:
+  - family-names: "Penafiel Macias"
+    given-names: "Petter Axcell"
+  - family-names: "Borrat Frigola"
+    given-names: "Xavier"
+repository-code: "https://github.com/PetterAxcell/pzero"
+license: MIT
+version: "0.1.0"
+date-released: "2026-05-15"
+preferred-citation:
+  type: article
+  title: "A longitudinal electronic health record dataset of adult general ward stays for clinical deterioration research"
+  authors:
+    - family-names: "Penafiel Macias"
+      given-names: "Petter Axcell"
+    - family-names: "Colome Xicoy"
+      given-names: "Laia"
+    - family-names: "Ros Alonso"
+      given-names: "Joana"
+    - family-names: "Sanjuan"
+      given-names: "Gemma"
+    - family-names: "Munoz Rojas"
+      given-names: "Guido"
+    - family-names: "Frid"
+      given-names: "Santiago Andres"
+    - family-names: "Marrero Garcia"
+      given-names: "Ramses"
+    - family-names: "Ferrando"
+      given-names: "Carlos"
+    - family-names: "Armengol de la Hoz"
+      given-names: "Miguel Angel"
+    - family-names: "Borrat Frigola"
+      given-names: "Xavier"
+  year: 2026
+

@@ -20,7 +20,7 @@ Expected source files:
 | `laboratory_dic.csv` | `laboratory_dictionary` | Laboratory code dictionary. |
 | `vitals_values_dic.csv` | `vitals_values_dictionary` | Categorical vital-sign value dictionary. |
 
-The CSV data are not stored in this repository. Put them under `data/raw/`, either extracted or as a ZIP file.
+The CSV data are not stored in this repository. Put them under `data/raw/`, either extracted or as a single ZIP file. If `data/raw/` contains exactly one ZIP archive and no extracted CSV bundle, the loader auto-detects that ZIP. If there are multiple ZIP archives, pass the intended archive explicitly with `PZERO_SOURCE=/data/raw/file.zip` or `--source data/raw/file.zip`.
 
 ## Quick Start: PostgreSQL
 
@@ -96,7 +96,13 @@ python scripts/pzero_load.py \
   --password pzero
 ```
 
-`--source` may point to a directory containing CSV files or to a ZIP archive.
+`--source` may point to a directory containing CSV files, a directory containing exactly one ZIP archive, or a ZIP archive directly.
+
+## Loader Safety
+
+Before any database load begins, the loader validates that every CSV header matches the expected source columns in the exact expected order. This prevents silent column shifts when database bulk loaders import rows by position.
+
+Large CSV tables are committed one table at a time to keep the load practical for local machines. If a load fails after table loading has started, the database may contain a partial load. Fix the issue and rerun with the default truncation behavior, or recreate the database.
 
 ## PhysioNet
 
@@ -124,6 +130,12 @@ docker compose exec -T mariadb mariadb -u pzero -ppzero pzero < sql/mariadb/90_i
 
 More detail is available in [docs/data_model.md](docs/data_model.md).
 
+## Data Access and Citation
+
+This repository contains software only, not controlled-access clinical data. See [docs/data_access.md](docs/data_access.md) for use notes. If you use this build in research, cite the dataset paper and the software citation metadata in [CITATION.cff](CITATION.cff).
+
+The code is released under the [MIT License](LICENSE). The dataset itself is governed by the applicable PhysioNet access terms and data use agreement.
+
 ## Repository Layout
 
 ```text
@@ -133,6 +145,13 @@ scripts/               Loader and PhysioNet helper scripts
 sql/postgres/          PostgreSQL DDL, indexes, and integrity checks
 sql/mariadb/           MariaDB DDL, indexes, and integrity checks
 docker-compose.yml     PostgreSQL, MariaDB, and loader services
+```
+
+## Tests
+
+```bash
+python -m unittest discover -s tests
+docker compose config --quiet
 ```
 
 ## Primary Outcome

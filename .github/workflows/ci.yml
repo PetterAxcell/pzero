@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile loader
+        run: python -m py_compile scripts/pzero_load.py
+
+      - name: Check loader help
+        run: python scripts/pzero_load.py --help
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests
+
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
